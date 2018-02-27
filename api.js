@@ -33,15 +33,16 @@ async function getMovies(req, res, next) {
     url: 'http://api.biomynd.is/authenticate',
     type: 'POST',
     data: {
-      username: 'username', // VANTAR
-      password: 'password', // VANTAR
+      username: 'snati', // VANTAR
+      password: 'helgigummi', // VANTAR
     },
   }, (error, response, body) => ({ err: error, res: response, body }));
   console.log('token:', token);
   console.log('err:', token.err);
   console.log('res:', token.res);
   console.log('body:', token.body);
-
+  return res.json(token.body);
+  /*
   const data = await request({
     url: 'http://api.biomynd.is/movies',
     type: 'GET',
@@ -54,7 +55,7 @@ async function getMovies(req, res, next) {
   console.log('res:', data.res);
   console.log('body:', data.body);
 
-  return res.json(data.body);
+  return res.json(data.body);*/
 }
 
 router.get('/', catchErrors(getMovies));
