@@ -75,7 +75,7 @@ async function getToken() {
     response.on('data', function(chunk) {
       console.log(chunk.toString());
 
-      return JSON.parse(chunk).token;
+      return JSON.parse(chunk.toString()).token;
     })
   });
 
