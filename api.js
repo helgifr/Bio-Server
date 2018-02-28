@@ -4,74 +4,8 @@ const express = require('express');
 // const { check, validationResult } = require('express-validator/check');
 // const { sanitize } = require('express-validator/filter');
 
-//const request = require('request');
-const axios = require('axios');
 var http = require('http');
-var token;
 
-function postCode() {
-var options = {
-  host: 'api.biomynd.is',
-  path: '/authenticate?username=snati&password=helgigummi',
-  method: 'POST',
-  data: {
-    username: 'snati',
-    password: 'helgigummi',
-  },
-  dataType: 'json',
-};
-
-var req = http.request(options, function(res) {
-
-  console.log(res);
-  
-  res.setEncoding('utf-8');
-  res.on('data', function (chunk) {
-    console.log(chunk);
-    
-    //console.log(chunk.substring(chunk.search('API_SERVICE_INFO') + 19, chunk.search('ir.is/"}') + 8));
-    //token = JSON.parse(chunk.substring(chunk.search('API_SERVICE_INFO') + 19, chunk.search('ir.is/"}') + 8));
-    //getCode();
-    
-    //token = JSON.parse(chunk.substring(chunk.search('API_SERVICE_INFO') + 19, chunk.search('ir.is/"}') + 8));
-    
-  })
-
-})
-
-req.end();
-
-}
-
-function getCode() {
-  console.log(token);
-  
-  var options = {
-    host: 'api.biomynd.is',
-    path: '/movies',
-    type: 'GET',
-    headers: { 
-      'Content-Type': 'application/json',
-      'x-access-token': token.token 
-    },
-    dataType: 'json',
-  };
-  
-  var req = http.request(options, function(res) {
-  
-    //console.log(res);
-    
-    res.setEncoding('utf-8');
-    res.on('data', function (chunk) {
-      //console.log('Response: ' + chunk);
-      
-    })
-  
-  })
-  
-  req.end();
-  
-}
 const router = express.Router();
 
 /*
@@ -92,22 +26,40 @@ function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
 }
 
-async function getMovies(req, res, next, token) {
-  $.ajax({
-    url: 'http://api.biomynd.is/movies',
-    type: 'GET',
-    headers: {
-      'x-access-token': token,
-    },
-    dataType: 'json',
-    success : function (response) {
-      console.log(response);
-      return res.send(body);
-    }
-  });
+async function getMovies(req, res, next) {
+
+  const token = await getToken();
+
+  const list = await getMovieList(token);
+
+  return res.json(list);
 }
 
-async function getToken(req, res, next) {
+async function getMovieList(token) {
+  const options = {
+    hostname: 'api.kvikmyndir.is',
+    port: 80,
+    path: "/movies",
+    method: "GET",
+    headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(body),
+        'x-access-token': token,
+    },
+    dataType: 'json'
+  }
+
+  const req = http.request(options, function(res) {
+    res.on('data', function(chunk) {
+      console.log(chunk.toString());
+
+      return JSON.parse(chunk);
+    });
+  });
+  req.end();
+}
+
+async function getToken() {
   // const { id } = req.params;
   var body = JSON.stringify({ 'username': 'snati', 'password': 'helgigummi' });
   const options = {
@@ -124,30 +76,14 @@ async function getToken(req, res, next) {
   var request = http.request(options, function(response) {
     response.on('data', function(chunk) {
       console.log(chunk.toString());
-      
-      return res.json(JSON.parse(chunk));
+
+      return JSON.parse(chunk).token;
     })
   });
 
   request.end(body);
-
-  /*
-  request.post({
-    uri: 'http://127.0.0.1:3000/h',
-    form: obj,
-    dataType: 'json',
-  }, function (error, response, body) {
-      //console.log(error);
-      //console.log(response);
-      //console.log(body);
-      
-      //const token = JSON.parse(body.substring(body.search('API_SERVICE_INFO') + 19, body.search('ir.is/"}') + 8));
-      //return getMovies(req, res, next, token.token);
-
-  });*/
-  //postCode();
 }
 
-router.get('/', catchErrors(getToken));
+router.get('/', catchErrors(getMovies));
 
 module.exports = router;
