@@ -28,18 +28,18 @@ function catchErrors(fn) {
 
 async function getMovies(req, res, next) {
 
+  console.log('list:');
   const token = await getToken();
 
   const list = await getMovieList(token);
 
-  console.log('list: ' + list);
+  console.log(list[0]);
 
   return res.json(list);
 }
 
 async function getMovieList(token) {
   return new Promise ((resolve, reject) => {
-  console.log(token);
   const options = {
     hostname: 'api.kvikmyndir.is',
     port: 80,
@@ -52,10 +52,12 @@ async function getMovieList(token) {
   }
 
   const req = http.request(options, function(res) {
+    let data = '';
     res.on('data', function(chunk) {
-      console.log(chunk.toString());
-
-      resolve(chunk.toString());
+      data += chunk;
+    });
+    res.on('end', function() {
+      resolve(JSON.parse(data.toString()));
     });
   });
   req.end();
@@ -79,8 +81,6 @@ async function getToken() {
   }
   var request = http.request(options, function(response) {
     response.on('data', function(chunk) {
-      console.log(chunk.toString());
-
       resolve(JSON.parse(chunk.toString()).token);
     })
   });
@@ -89,6 +89,44 @@ async function getToken() {
 });
 }
 
+async function movie(token, id) {
+  return new Promise ((resolve, reject) => {
+    const options = {
+      hostname: 'api.kvikmyndir.is',
+      port: 80,
+      path: "/movies",
+      method: "GET",
+      headers: {
+          'x-access-token': token,
+      },
+      dataType: 'json'
+    }
+  
+    const req = http.request(options, function(res) {
+      let data = '';
+      res.on('data', function(chunk) {
+        data += chunk;
+      });
+      res.on('end', function() {
+        resolve(JSON.parse(data.toString()));
+      });
+    });
+    req.end();
+  });
+}
+
+/*async function getMovie(req, res, next) {
+  const { id } = req.params;
+  if (id >= 0) {
+    const token = await getToken();
+
+    const movie = await movie(token, id);
+
+    res.json(movie);
+  }
+}*/
+
 router.get('/', catchErrors(getMovies));
+//router.get('/:id', catchErrors(getMovie));
 
 module.exports = router;
