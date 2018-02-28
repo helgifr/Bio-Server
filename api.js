@@ -36,6 +36,7 @@ async function getMovies(req, res, next) {
 }
 
 async function getMovieList(token) {
+  console.log(token);
   const options = {
     hostname: 'api.kvikmyndir.is',
     port: 80,
