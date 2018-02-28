@@ -42,8 +42,6 @@ async function getMovieList(token) {
     path: "/movies",
     method: "GET",
     headers: {
-        "Content-Type": "application/json",
-        "Content-Length": Buffer.byteLength(body),
         'x-access-token': token,
     },
     dataType: 'json'
