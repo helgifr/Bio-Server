@@ -28,8 +28,7 @@ function catchErrors(fn) {
 
 async function getMovies(req, res, next) {
 
-  const list = await getToken()
-    .then((token) => getMovieList(token));
+  const list = await getToken();
 
   return res.json(list);
 }
@@ -51,7 +50,7 @@ async function getMovieList(token) {
     res.on('data', function(chunk) {
       console.log(chunk.toString());
 
-      return JSON.parse(chunk);
+      return JSON.parse(chunk.toString());
     });
   });
   req.end();
@@ -75,7 +74,7 @@ async function getToken() {
     response.on('data', function(chunk) {
       console.log(chunk.toString());
 
-      return JSON.parse(chunk.toString()).token;
+      return getMovieList(JSON.parse(chunk.toString()).token);
     })
   });
 
