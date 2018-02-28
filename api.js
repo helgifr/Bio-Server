@@ -4,8 +4,74 @@ const express = require('express');
 // const { check, validationResult } = require('express-validator/check');
 // const { sanitize } = require('express-validator/filter');
 
-const request = require('ajax-request');
+//const request = require('request');
+const axios = require('axios');
+var http = require('http');
+var token;
 
+function postCode() {
+var options = {
+  host: 'api.biomynd.is',
+  path: '/authenticate?username=snati&password=helgigummi',
+  method: 'POST',
+  data: {
+    username: 'snati',
+    password: 'helgigummi',
+  },
+  dataType: 'json',
+};
+
+var req = http.request(options, function(res) {
+
+  console.log(res);
+  
+  res.setEncoding('utf-8');
+  res.on('data', function (chunk) {
+    console.log(chunk);
+    
+    //console.log(chunk.substring(chunk.search('API_SERVICE_INFO') + 19, chunk.search('ir.is/"}') + 8));
+    //token = JSON.parse(chunk.substring(chunk.search('API_SERVICE_INFO') + 19, chunk.search('ir.is/"}') + 8));
+    //getCode();
+    
+    //token = JSON.parse(chunk.substring(chunk.search('API_SERVICE_INFO') + 19, chunk.search('ir.is/"}') + 8));
+    
+  })
+
+})
+
+req.end();
+
+}
+
+function getCode() {
+  console.log(token);
+  
+  var options = {
+    host: 'api.biomynd.is',
+    path: '/movies',
+    type: 'GET',
+    headers: { 
+      'Content-Type': 'application/json',
+      'x-access-token': token.token 
+    },
+    dataType: 'json',
+  };
+  
+  var req = http.request(options, function(res) {
+  
+    //console.log(res);
+    
+    res.setEncoding('utf-8');
+    res.on('data', function (chunk) {
+      //console.log('Response: ' + chunk);
+      
+    })
+  
+  })
+  
+  req.end();
+  
+}
 const router = express.Router();
 
 /*
@@ -26,38 +92,67 @@ function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
 }
 
-async function getMovies(req, res, next) {
-  // const { id } = req.params;
-
-  const token = await request({
-    url: 'http://api.biomynd.is/authenticate',
-    type: 'POST',
-    data: {
-      username: 'snati', // VANTAR
-      password: 'helgigummi', // VANTAR
-    },
-  }, (error, response, body) => ({ err: error, res: response, body }));
-  console.log('token:', token);
-  console.log('err:', token.err);
-  console.log('res:', token.res);
-  console.log('body:', token.body);
-  return res.json(token.body);
-  /*
-  const data = await request({
+async function getMovies(req, res, next, token) {
+  $.ajax({
     url: 'http://api.biomynd.is/movies',
     type: 'GET',
     headers: {
       'x-access-token': token,
     },
-  }, (error, response, body) => ({ err: error, res: response, body }));
-  console.log('data:', data);
-  console.log('err:', data.err);
-  console.log('res:', data.res);
-  console.log('body:', data.body);
-
-  return res.json(data.body);*/
+    dataType: 'json',
+    success : function (response) {
+      console.log(response);
+      return res.send(body);
+    }
+  });
 }
 
-router.get('/', catchErrors(getMovies));
+async function getToken(req, res, next) {
+  // const { id } = req.params;
+  var body = JSON.stringify({ 'username': 'snati', 'password': 'helgigummi' });
+  const options = {
+    hostname: 'api.biomynd.is',
+    path: "/authenticate",
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(body)
+    },
+    dataType: 'json'
+  }
+  var request = http.request(options);
+
+  request.end(body);
+  
+  request.on('connect', (reponse, socket, head) => {
+    console.log('got connected!');
+    
+    socket.on('data', (chunk) => {
+      console.log(chunk.toString());
+      return res.send(chunk.toString());
+    });
+    socket.on('end', () => {
+      proxy.close();
+    });
+  });
+
+  /*
+  request.post({
+    uri: 'http://127.0.0.1:3000/h',
+    form: obj,
+    dataType: 'json',
+  }, function (error, response, body) {
+      //console.log(error);
+      //console.log(response);
+      //console.log(body);
+      
+      //const token = JSON.parse(body.substring(body.search('API_SERVICE_INFO') + 19, body.search('ir.is/"}') + 8));
+      //return getMovies(req, res, next, token.token);
+
+  });*/
+  //postCode();
+}
+
+router.get('/', catchErrors(getToken));
 
 module.exports = router;

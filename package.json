@@ -5,12 +5,16 @@
   "main": ".eslintrc.js",
   "dependencies": {
     "ajax-request": "^1.2.3",
+    "axios": "^0.18.0",
     "dotenv": "^5.0.0",
     "express": "^4.16.2",
     "express-validator": "^4.3.0",
+    "jquery": "^3.3.1",
+    "jsdom": "^11.6.2",
     "nodemon": "^1.15.1",
     "pg": "^7.4.1",
     "util": "^0.10.3",
+    "xmlhttprequest": "^1.8.0",
     "xss": "^0.3.7"
   },
   "devDependencies": {
