@@ -30,6 +30,8 @@ async function getMovies(req, res, next) {
 
   const list = await getToken();
 
+  console.log(list);
+
   return res.json(list);
 }
 
