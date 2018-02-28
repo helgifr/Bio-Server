@@ -32,6 +32,8 @@ async function getMovies(req, res, next) {
 
   const list = await getMovieList(token);
 
+  console.log('list: ' + list);
+
   return res.json(list);
 }
 
@@ -53,7 +55,7 @@ async function getMovieList(token) {
     res.on('data', function(chunk) {
       console.log(chunk.toString());
 
-      resolve(JSON.parse(chunk.toString()));
+      resolve(chunk.toString());
     });
   });
   req.end();
