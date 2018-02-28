@@ -28,9 +28,8 @@ function catchErrors(fn) {
 
 async function getMovies(req, res, next) {
 
-  const token = await getToken();
-
-  const list = await getMovieList(token);
+  const list = await getToken()
+    .then((token) => getMovieList(token));
 
   return res.json(list);
 }
