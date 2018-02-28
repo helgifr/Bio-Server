@@ -28,14 +28,15 @@ function catchErrors(fn) {
 
 async function getMovies(req, res, next) {
 
-  const list = await getToken();
+  const token = await getToken();
 
-  console.log('list: ' + list);
+  console.log('token: ' + token);
 
   return res.json(list);
 }
 
 async function getMovieList(token) {
+  return new Promise ((resolve, reject) => {
   console.log(token);
   const options = {
     hostname: 'api.kvikmyndir.is',
@@ -52,14 +53,16 @@ async function getMovieList(token) {
     res.on('data', function(chunk) {
       console.log(chunk.toString());
 
-      return JSON.parse(chunk.toString());
+      resolve(JSON.parse(chunk.toString()));
     });
   });
   req.end();
 }
+}
 
 async function getToken() {
   // const { id } = req.params;
+  return new Promise ((resolve, reject) => {
   var body = JSON.stringify({ 'username': 'snati', 'password': 'helgigummi' });
   const options = {
     hostname: 'api.kvikmyndir.is',
@@ -76,11 +79,12 @@ async function getToken() {
     response.on('data', function(chunk) {
       console.log(chunk.toString());
 
-      return getMovieList(JSON.parse(chunk.toString()).token);
+      resolve(JSON.parse(chunk.toString()).token);
     })
   });
 
   request.end(body);
+}
 }
 
 router.get('/', catchErrors(getMovies));
