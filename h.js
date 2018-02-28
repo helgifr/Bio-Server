@@ -3,9 +3,9 @@ const express = require('express');
 const router = express.Router();
 
 async function boi(req, res) {
-  console.log(req.body);
+  console.log(req.body.username);
   
-  return res.send('boi');
+  return res.json({boi: "boi"});
 
 }
 

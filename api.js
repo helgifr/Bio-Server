@@ -111,7 +111,8 @@ async function getToken(req, res, next) {
   // const { id } = req.params;
   var body = JSON.stringify({ 'username': 'snati', 'password': 'helgigummi' });
   const options = {
-    hostname: 'api.biomynd.is',
+    hostname: 'api.kvikmyndir.is',
+    port: 80,
     path: "/authenticate",
     method: "POST",
     headers: {
@@ -120,21 +121,15 @@ async function getToken(req, res, next) {
     },
     dataType: 'json'
   }
-  var request = http.request(options);
+  var request = http.request(options, function(response) {
+    response.on('data', function(chunk) {
+      console.log(chunk.toString());
+      
+      return res.json(JSON.parse(chunk));
+    })
+  });
 
   request.end(body);
-  
-  request.on('connect', (reponse, socket, head) => {
-    console.log('got connected!');
-    
-    socket.on('data', (chunk) => {
-      console.log(chunk.toString());
-      return res.send(chunk.toString());
-    });
-    socket.on('end', () => {
-      proxy.close();
-    });
-  });
 
   /*
   request.post({
