@@ -57,7 +57,7 @@ async function getMovieList(token) {
     });
   });
   req.end();
-}
+});
 }
 
 async function getToken() {
@@ -84,7 +84,7 @@ async function getToken() {
   });
 
   request.end(body);
-}
+});
 }
 
 router.get('/', catchErrors(getMovies));
