@@ -33,7 +33,7 @@ function catchErrors(fn) {
 async function getMovies(req, res, next) {
 
   if (date === null || Date.now() - date > 86400000) {
-    console.info('Token expired, fetching new token...');
+    console.info('Token expired. Fetching new token...');
     token = await getToken();
     date = Date.now();
   }
