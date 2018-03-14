@@ -1,26 +1,30 @@
 const express = require('express');
-// const xss = require('xss');
+const xss = require('xss');
 
-// const { check, validationResult } = require('express-validator/check');
-// const { sanitize } = require('express-validator/filter');
+const { check, validationResult } = require('express-validator/check');
+const { sanitize } = require('express-validator/filter');
 
-var http = require('http');
+const axios = require('axios');
+const http = require('http');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
+const { addUser, findUserByUsername } = require('./db');
+
+let date = null;
+
+let token;
 
 const router = express.Router();
 
-/*
 const formValidation = [
-  check('title')
-    .custom(string => string.length > 0 && string.length < 256)
+  check('username')
+  .custom(string => (string.length >= 3) && (typeof string === 'string'))
     .withMessage('Title must be a string of length 1 to 255 characters'),
-  check('text')
-    .exists().withMessage('Text must be a string'),
-  check('datetime')
-    .isISO8601().withMessage('Datetime must be a ISO 8601 date'),
-  sanitize('title').trim(),
-  sanitize('text'),
+  check('password')
+    .custom(string => (string.length >= 3) && (typeof string === 'string')),
+  sanitize('username').trim(),
 ];
-*/
 
 function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
@@ -28,12 +32,13 @@ function catchErrors(fn) {
 
 async function getMovies(req, res, next) {
 
-  console.log('list:');
-  const token = await getToken();
+  if (date === null || Date.now() - date > 86400000) {
+    console.info('Token expired, fetching new token...');
+    token = await getToken();
+    date = Date.now();
+  }
 
   const list = await getMovieList(token);
-
-  console.log(list[0]);
 
   return res.json(list);
 }
@@ -65,7 +70,6 @@ async function getMovieList(token) {
 }
 
 async function getToken() {
-  // const { id } = req.params;
   return new Promise ((resolve, reject) => {
   var body = JSON.stringify({ 'username': 'snati', 'password': 'helgigummi' });
   const options = {
@@ -115,18 +119,61 @@ async function movie(token, id) {
   });
 }
 
-/*async function getMovie(req, res, next) {
-  const { id } = req.params;
-  if (id >= 0) {
-    const token = await getToken();
+async function register(req, res, next) {
+  const {
+    username,
+    password,
+  } = req.body;
 
-    const movie = await movie(token, id);
+  let hash = xss(password);
+  hash = await bcrypt.hash(hash, saltRounds);
 
-    res.json(movie);
+  const user = {
+    username: xss(username),
+    password: xss(hash),
+  };
+
+  const validation = validationResult(req);
+
+  if (!validation.isEmpty()) {
+    const errorsArray = validation.array();
+    const errors = errorsArray.map(i => ({ field: i.param, message: i.msg }));
+    return res.status(400).json(errors);
   }
-}*/
+
+
+  return addUser(user)
+    .then((data) => {
+      if (data) {
+        return res.status(200).json(data);
+      }
+      return next();
+    })
+    .catch((error) => {
+      return next(error);
+    });
+}
+
+async function login(req, res) {
+  const { username, password } = req.body;
+
+  const user = await findUserByUsername(username);
+
+  if (!user) {
+    return res.status(401).json({ error: 'No such user' });
+  }
+
+  const passwordIsCorrect = await bcrypt.compare(password, user.password);
+
+  if (passwordIsCorrect) {
+    return res.status(200).json({ success: true });
+  }
+
+  return res.status(401).json({ error: 'Invalid password' });
+}
 
 router.get('/', catchErrors(getMovies));
-//router.get('/:id', catchErrors(getMovie));
+router.post('/register', catchErrors(register));
+router.post('/login', catchErrors(login));
 
 module.exports = router;
