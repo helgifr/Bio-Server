@@ -9,11 +9,13 @@ const http = require('http');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-const { addUser, findUserByUsername } = require('./db');
-
-let date = null;
-
-let token;
+const {
+  addUser,
+  findUserByUsername,
+  getToken,
+  delToken,
+  setToken,
+} = require('./db');
 
 const router = express.Router();
 
@@ -31,11 +33,23 @@ function catchErrors(fn) {
 }
 
 async function getMovies(req, res, next) {
-
-  if (date === null || Date.now() - date > 86400000) {
+  const data = await getToken();
+  let token, date;
+  if (data === undefined) {
     console.info('Token expired. Fetching new token...');
-    token = await getToken();
-    date = Date.now();
+    const result = await delToken();
+    token = await fetchToken();
+    date = new Date();
+    await setToken(token, date);
+  } else {
+    ({ token, date } = data);
+    if (Date.now() - date > 86400000) {
+      console.info('Token expired. Fetching new token...');
+      const result = await delToken();
+      token = await fetchToken();
+      date = new Date();
+      await setToken(token, date);
+    }
   }
 
   const list = await getMovieList(token);
@@ -44,7 +58,7 @@ async function getMovies(req, res, next) {
 }
 
 async function getMovieList(token) {
-  return new Promise ((resolve, reject) => {
+  return new Promise ((resolve) => {
   const options = {
     hostname: 'api.kvikmyndir.is',
     port: 80,
@@ -69,7 +83,7 @@ async function getMovieList(token) {
 });
 }
 
-async function getToken() {
+async function fetchToken() {
   return new Promise ((resolve, reject) => {
   var body = JSON.stringify({ 'username': 'snati', 'password': 'helgigummi' });
   const options = {

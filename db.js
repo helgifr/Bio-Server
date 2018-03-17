@@ -52,7 +52,61 @@ async function findUserByUsername(username) {
   }
 }
 
+async function getToken() {
+  const client = new Client({ connectionString });
+  await client.connect();
+  const query = 'SELECT * FROM token';
+
+  try {
+    const result = await client.query(query);
+    const { rows } = result;
+    return rows[0];
+  } catch (error) {
+    console.error(error);
+    throw error;
+  } finally {
+    client.end();
+  }
+}
+
+async function delToken() {
+  const client = new Client({ connectionString });
+  await client.connect();
+  const query = 'DELETE FROM token';
+
+  try {
+    const result = await client.query(query);
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  } finally {
+    client.end();
+  }
+}
+
+async function setToken(token, date) {
+  const client = new Client({ connectionString });
+  await client.connect();
+  const query = 'INSERT INTO token(token, date) VALUES($1, $2) RETURNING *';
+  const values = [token, date];
+
+  try {
+    const result = await client.query(query, values);
+    const { rows } = result;
+    return rows[0];
+  } catch (error) {
+    console.error(error);
+    throw error;
+  } finally {
+    client.end();
+  }
+}
+
 module.exports = {
   addUser,
   findUserByUsername,
+  getToken,
+  setToken,
+  delToken,
 };
