@@ -36,14 +36,14 @@ async function getMovies(req, res, next) {
   const data = await getToken();
   let token, date;
   if (data === undefined) {
-    console.info('Token expired. Fetching new token...');
-    const result = await delToken();
+    console.info('Fetching token for the first time...');
     token = await fetchToken();
     date = new Date();
     await setToken(token, date);
   } else {
     ({ token, date } = data);
     if (Date.now() - date > 86400000) {
+      console.log(Date.now() - date);
       console.info('Token expired. Fetching new token...');
       const result = await delToken();
       token = await fetchToken();
