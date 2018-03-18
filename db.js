@@ -1,7 +1,5 @@
 require('dotenv').config();
 
-const xss = require('xss');
-
 const { Client } = require('pg');
 
 const connectionString = process.env.DATABASE_URL;
@@ -11,19 +9,19 @@ async function addUser(user) {
     username,
     password,
   } = user;
-  
+
   const client = new Client({ connectionString });
   await client.connect();
-  
+
   const query = 'INSERT INTO users(username, password) VALUES($1, $2) RETURNING *';
   const values = [
     username,
-    password
+    password,
   ];
 
   try {
     const result = await client.query(query, values);
-    
+
     const { rows } = result;
     return rows[0];
   } catch (error) {
