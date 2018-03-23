@@ -37,7 +37,7 @@ async function getMovieList(token) {
 }
 
 async function fetchToken() {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const body = JSON.stringify({ username: 'snati', password: 'helgigummi' });
     const options = {
       hostname: 'api.kvikmyndir.is',
@@ -56,6 +56,10 @@ async function fetchToken() {
       });
     });
 
+    request.on('error', (err) => {
+      reject(err);
+    });
+
     request.end(body);
   });
 }
@@ -66,7 +70,12 @@ async function getMovies(req, res) {
   let date;
   if (data === undefined) {
     console.info('Fetching token for the first time...');
-    token = await fetchToken();
+    try {
+      token = await fetchToken();
+    } catch (err) {
+      console.error('Unable to fetch token');
+      throw err;
+    }
     date = new Date();
     await setToken(token, date);
   } else {
@@ -74,7 +83,12 @@ async function getMovies(req, res) {
     if (Date.now() - date > 86400000) {
       console.info('Token expired. Fetching new token...');
       await delToken();
-      token = await fetchToken();
+      try {
+        token = await fetchToken();
+      } catch (err) {
+        console.error('Cant fetch token');
+        throw err;
+      }
       date = new Date();
       await setToken(token, date);
     }
