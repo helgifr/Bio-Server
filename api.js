@@ -74,7 +74,7 @@ async function getMovies(req, res) {
       token = await fetchToken();
     } catch (err) {
       console.error('Unable to fetch token');
-      throw err;
+      return res.status(503).send('The api is down');
     }
     date = new Date();
     await setToken(token, date);
@@ -87,7 +87,7 @@ async function getMovies(req, res) {
         token = await fetchToken();
       } catch (err) {
         console.error('Cant fetch token');
-        throw err;
+        return res.status(503).send('The api is down');
       }
       date = new Date();
       await setToken(token, date);
