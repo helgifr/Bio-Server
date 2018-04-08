@@ -98,34 +98,11 @@ async function getMovies(req, res) {
 
   return res.json(list);
 }
-/*
-async function movie(token, id) {
-  return new Promise ((resolve, reject) => {
-    const options = {
-      hostname: 'api.kvikmyndir.is',
-      port: 80,
-      path: "/movies",
-      method: "GET",
-      headers: {
-          'x-access-token': token,
-      },
-      dataType: 'json'
-    }
 
-    const req = http.request(options, function(res) {
-      let data = '';
-      res.on('data', function(chunk) {
-        data += chunk;
-      });
-      res.on('end', function() {
-        resolve(JSON.parse(data.toString()));
-      });
-    });
-    req.end();
-  });
+async function authenticate(req, res) {
+  console.log(req);
 }
-*/
 
-router.get('/', getMovies);
+router.get('/', authenticate, getMovies);
 
 module.exports = router;
