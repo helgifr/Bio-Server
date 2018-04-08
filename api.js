@@ -99,8 +99,12 @@ async function getMovies(req, res) {
   return res.json(list);
 }
 
-async function authenticate(req, res) {
-  console.log(req);
+async function authenticate(req, res, next) {
+  const token = req.headers.authorization;
+  if (token === 'Bearer Kappa') {
+    return next();
+  }
+  return res.json({ error: 'Invalid token' });
 }
 
 router.get('/', authenticate, getMovies);
