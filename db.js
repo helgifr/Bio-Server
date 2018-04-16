@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const { Client } = require('pg');
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = process.env.HEROKU_POSTGRESQL_JADE_URL;
 
 async function addUser(user) {
   const {
