@@ -5,19 +5,19 @@
   "main": ".eslintrc.js",
   "dependencies": {
     "bcrypt": "^2.0.1",
-    "dotenv": "^5.0.0",
-    "express": "^4.16.2",
-    "express-validator": "^5.1.2",
-    "nodemon": "^1.17.1",
-    "pg": "^7.4.1",
-    "util": "^0.10.3",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.4",
+    "express-validator": "^5.3.0",
+    "nodemon": "^1.18.5",
+    "pg": "^7.6.0",
+    "util": "^0.10.4",
     "xmlhttprequest": "^1.8.0",
-    "xss": "^0.3.7"
+    "xss": "^0.3.8"
   },
   "devDependencies": {
-    "eslint": "^4.17.0",
+    "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0"
+    "eslint-plugin-import": "^2.14.0"
   },
   "scripts": {
     "start": "node app.js",
