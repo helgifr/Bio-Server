@@ -36,6 +36,32 @@ async function getMovieList(token) {
   });
 }
 
+async function getUpcomingMovieList(token) {
+  return new Promise((resolve) => {
+    const options = {
+      hostname: 'api.kvikmyndir.is',
+      port: 80,
+      path: '/upcoming',
+      method: 'GET',
+      headers: {
+        'x-access-token': token,
+      },
+      dataType: 'json',
+    };
+
+    const req = http.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        resolve(JSON.parse(data.toString()));
+      });
+    });
+    req.end();
+  });
+}
+
 async function fetchToken() {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify({ username: 'snati', password: 'helgigummi' });
@@ -100,6 +126,42 @@ async function getMovies(req, res) {
   return res.json(list);
 }
 
+async function getUpcomingMovies(req, res) {
+  const data = await getToken();
+  let token;
+  let date;
+  if (data === undefined) {
+    console.info('Fetching token for the first time...');
+    try {
+      token = await fetchToken();
+    } catch (err) {
+      console.error('Unable to fetch token');
+      return res.status(503).send('The api is down');
+    }
+    date = new Date();
+    await setToken(token, date);
+  } else {
+    ({ token, date } = data);
+    console.info(Date.now() - date);
+    if (Date.now() - date > 86400000) {
+      console.info('Token expired. Fetching new token...');
+      await delToken();
+      try {
+        token = await fetchToken();
+      } catch (err) {
+        console.error('Cant fetch token');
+        return res.status(503).send('The api is down');
+      }
+      date = new Date();
+      await setToken(token, date);
+    }
+  }
+
+  const list = await getUpcomingMovieList(token);
+
+  return res.json(list);
+}
+
 async function authenticate(req, res, next) {
   const token = req.headers.authorization;
   if (token === 'Bearer Kappa') {
@@ -109,5 +171,6 @@ async function authenticate(req, res, next) {
 }
 
 router.get('/', authenticate, getMovies);
+router.get('/upcoming', authenticate, getUpcomingMovies);
 
 module.exports = router;
