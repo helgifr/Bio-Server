@@ -8,8 +8,8 @@
     "dotenv": "^5.0.1",
     "express": "^4.16.4",
     "express-validator": "^5.3.0",
-    "nodemon": "^1.18.5",
-    "pg": "^7.6.0",
+    "nodemon": "^1.18.7",
+    "pg": "^7.7.1",
     "util": "^0.10.4",
     "xmlhttprequest": "^1.8.0",
     "xss": "^0.3.8"

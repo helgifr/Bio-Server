@@ -1,0 +1,7 @@
+{
+  "appService.zipIgnorePattern": [
+    "node_modules{,/**}"
+  ],
+  "appService.defaultWebAppToDeploy": "/subscriptions/2df41c64-fb38-462a-afd4-b25ea2dfc11f/resourceGroups/appsvc_rg_linux_centralus/providers/Microsoft.Web/sites/Bio-Server",
+  "appService.deploySubpath": ""
+}
