@@ -99,6 +99,7 @@ async function getMovies(req, res) {
     console.info('Fetching token for the first time...');
     try {
       token = await fetchToken();
+      console.info('token 2', token);
     } catch (err) {
       console.error('Unable to fetch token');
       return res.status(503).send('The api is down');
