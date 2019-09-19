@@ -12,7 +12,7 @@ app.use(cors());
 app.use('/', api);
 
 function notFoundHandler(req, res, next) { // eslint-disable-line
-  res.status(404).json({ error: 'Note not found' });
+  res.status(404).json({ error: 'Note not found' });d
 }
 
 function errorHandler(err, req, res, next) { // eslint-disable-line
