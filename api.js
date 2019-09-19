@@ -92,6 +92,7 @@ async function fetchToken() {
 
 async function getMovies(req, res) {
   const data = await getToken();
+  console.info('token', data);
   let token;
   let date;
   if (data === undefined) {
