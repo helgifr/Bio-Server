@@ -1,6 +1,7 @@
 const express = require('express');
 
 const http = require('http');
+const fetch = require('node-fetch');
 
 const {
   getToken,
@@ -11,29 +12,17 @@ const {
 const router = express.Router();
 
 async function getMovieList(token) {
-  return new Promise((resolve) => {
-    const options = {
-      hostname: 'api.kvikmyndir.is',
-      port: 80,
-      path: '/movies',
+  return fetch('http://api.kvikmyndir.is/movies', { port: 80,
+      
       method: 'GET',
       headers: {
         'x-access-token': token,
       },
       dataType: 'json',
-    };
-
-    const req = http.request(options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-      res.on('end', () => {
-        resolve(JSON.parse(data.toString()));
-      });
-    });
-    req.end();
-  });
+    })
+    .then(res => res.json())
+    .then(body => body)
+    .catch(err => console.error(err))
 }
 
 async function getUpcomingMovieList(token) {
