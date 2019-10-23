@@ -34,7 +34,7 @@ async function getUpcomingMovieList(token) {
       path: '/upcoming',
       method: 'GET',
       headers: {
-        'x-access-token': token,
+        'x-access-token': JSON.parse(token).token,
       },
       dataType: 'json',
     };
