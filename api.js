@@ -63,7 +63,7 @@ async function fetchToken() {
       dataType: 'json',
     })
     .then(res => res.json())
-    .then(body => body)
+    .then(body => body.token)
     .catch(err => console.error(err))
   
 //   return new Promise((resolve, reject) => {
