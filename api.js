@@ -17,7 +17,7 @@ async function getMovieList(token) {
       
       method: 'GET',
       headers: {
-        'x-access-token': token,
+        'x-access-token': token.token,
       },
       dataType: 'json',
     })
