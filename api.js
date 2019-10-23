@@ -110,7 +110,7 @@ async function getMovies(req, res) {
     date = new Date();
     await setToken(token, date);
   } else {
-    ({ token, date } = data);
+    ({ token, date } = data.token);
     console.info(Date.now() - date);
     if (Date.now() - date > 86400000) {
       console.info('Token expired. Fetching new token...');
