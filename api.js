@@ -52,31 +52,45 @@ async function getUpcomingMovieList(token) {
 }
 
 async function fetchToken() {
-  return new Promise((resolve, reject) => {
-    const body = JSON.stringify({ username: 'snati', password: 'helgigummi' });
-    const options = {
-      hostname: 'api.kvikmyndir.is',
-      port: 80,
-      path: '/authenticate',
+  const body = JSON.stringify({ username: 'snati', password: 'helgigummi' });
+   return fetch('http://api.kvikmyndir.is/authenticate', { port: 80,
+      
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(body),
       },
+      body,
       dataType: 'json',
-    };
-    const request = http.request(options, (response) => {
-      response.on('data', (chunk) => {
-        resolve(JSON.parse(chunk.toString()).token);
-      });
-    });
+    })
+    .then(res => res.json())
+    .then(body => body)
+    .catch(err => console.error(err))
+  
+//   return new Promise((resolve, reject) => {
+//     const body = JSON.stringify({ username: 'snati', password: 'helgigummi' });
+//     const options = {
+//       hostname: 'api.kvikmyndir.is',
+//       port: 80,
+//       path: '/authenticate',
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'Content-Length': Buffer.byteLength(body),
+//       },
+//       dataType: 'json',
+//     };
+//     const request = http.request(options, (response) => {
+//       response.on('data', (chunk) => {
+//         resolve(JSON.parse(chunk.toString()).token);
+//       });
+//     });
 
-    request.on('error', (err) => {
-      reject(err);
-    });
+//     request.on('error', (err) => {
+//       reject(err);
+//     });
 
-    request.end(body);
-  });
+//     request.end(body);
+//   });
 }
 
 async function getMovies(req, res) {
