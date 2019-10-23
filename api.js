@@ -12,6 +12,7 @@ const {
 const router = express.Router();
 
 async function getMovieList(token) {
+  console.info('hva', token);
   return fetch('http://api.kvikmyndir.is/movies', { port: 80,
       
       method: 'GET',
