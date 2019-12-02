@@ -125,7 +125,6 @@ async function getMovies(req, res) {
       date = new Date();
       await setToken(token, date);
     }
-    token = data;
   }
 
   const list = await getMovieList(token);
