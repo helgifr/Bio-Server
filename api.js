@@ -12,12 +12,11 @@ const {
 const router = express.Router();
 
 async function getMovieList(token) {
-  console.info('hva', JSON.parse(token).token);
   return fetch('http://api.kvikmyndir.is/movies', { port: 80,
       
       method: 'GET',
       headers: {
-        'x-access-token': JSON.parse(token).token,
+        'x-access-token': typeof token === 'string' ? token : JSON.parse(token).token,
       },
       dataType: 'json',
     })
@@ -34,7 +33,7 @@ async function getUpcomingMovieList(token) {
       path: '/upcoming',
       method: 'GET',
       headers: {
-        'x-access-token': JSON.parse(token).token,
+        'x-access-token': typeof token === 'string' ? token : JSON.parse(token).token,
       },
       dataType: 'json',
     };
@@ -162,7 +161,7 @@ async function getUpcomingMovies(req, res) {
       await setToken(token, date);
     }
   }
-
+  
   const list = await getUpcomingMovieList(token);
 
   return res.json(list);
