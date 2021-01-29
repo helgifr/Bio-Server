@@ -141,6 +141,7 @@ async function getUpcomingMovies(req, res) {
       return res.status(503).send('The api is down');
     }
     date = new Date();
+    await delToken();
     await setToken(token, date);
   } else {
     ({ token, date } = data);
