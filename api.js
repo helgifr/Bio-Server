@@ -105,6 +105,7 @@ async function getMovies(req, res) {
       return res.status(503).send('The api is down');
     }
     date = new Date();
+    await delToken();
     await setToken(token, date);
   } else {
     ({ token, date } = data);
@@ -132,7 +133,7 @@ async function getUpcomingMovies(req, res) {
   const data = await getToken();
   let token;
   let date;
-  if (data === undefined) {
+  if (data === undefined || !data.token) {
     console.info('Fetching token for the first time...');
     try {
       token = await fetchToken();
