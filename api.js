@@ -98,7 +98,7 @@ async function getMovies(req, res) {
   console.info('token', data);
   let token;
   let date;
-  if (data === undefined) {
+  if (data === undefined || !data.token) {
     console.info('Fetching token for the first time...');
     try {
       token = await fetchToken();
