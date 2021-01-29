@@ -52,15 +52,12 @@ async function getUpcomingMovieList(token) {
 }
 
 async function fetchToken() {
-  const body = JSON.stringify({ username: 'snati', password: 'helgigummi' });
-   return fetch('http://api.kvikmyndir.is/authenticate', { port: 80,
-      
+   return fetch('https://api.kvikmyndir.is/authenticate', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body,
-      dataType: 'json',
+      body: JSON.stringify({ username: 'snati', password: 'helgigummi' }),
     })
     .then(res => res.json())
     .then(body => body.token)
