@@ -12,9 +12,7 @@ const {
 const router = express.Router();
 
 async function getMovieList(token) {
-  return fetch('http://api.kvikmyndir.is/movies', { port: 80,
-      
-      method: 'GET',
+  return fetch('http://api.kvikmyndir.is/movies', {
       headers: {
         'x-access-token': typeof token === 'string' ? token : JSON.parse(token).token,
       },
@@ -26,29 +24,15 @@ async function getMovieList(token) {
 }
 
 async function getUpcomingMovieList(token) {
-  return new Promise((resolve) => {
-    const options = {
-      hostname: 'api.kvikmyndir.is',
-      port: 80,
-      path: '/upcoming',
-      method: 'GET',
+  return fetch('http://api.kvikmyndir.is/upcoming', {
       headers: {
         'x-access-token': typeof token === 'string' ? token : JSON.parse(token).token,
       },
       dataType: 'json',
-    };
-
-    const req = http.request(options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-      res.on('end', () => {
-        resolve(JSON.parse(data.toString()));
-      });
-    });
-    req.end();
-  });
+    })
+    .then(res => res.json())
+    .then(body => body)
+    .catch(err => console.error(err))
 }
 
 async function fetchToken() {
@@ -61,33 +45,7 @@ async function fetchToken() {
     })
     .then(res => res.json())
     .then(body => body.token)
-    .catch(err => console.error(err))
-  
-//   return new Promise((resolve, reject) => {
-//     const body = JSON.stringify({ username: 'snati', password: 'helgigummi' });
-//     const options = {
-//       hostname: 'api.kvikmyndir.is',
-//       port: 80,
-//       path: '/authenticate',
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//         'Content-Length': Buffer.byteLength(body),
-//       },
-//       dataType: 'json',
-//     };
-//     const request = http.request(options, (response) => {
-//       response.on('data', (chunk) => {
-//         resolve(JSON.parse(chunk.toString()).token);
-//       });
-//     });
-
-//     request.on('error', (err) => {
-//       reject(err);
-//     });
-
-//     request.end(body);
-//   });
+    .catch(err => console.error(err));
 }
 
 async function getMovies(req, res) {
