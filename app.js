@@ -7,9 +7,13 @@ const app = express();
 app.use(express.json());
 
 app.use((req, res, next) => {
+  console.log('header 1')
   res.header('Access-Control-Allow-Origin', '*');
+  console.log('header 2')
   res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+  console.log('header 3')
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  console.log('header 4')
   next();
 });
 
